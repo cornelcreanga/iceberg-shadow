@@ -1,0 +1,44 @@
+plugins {
+    id 'java'
+    id 'com.github.johnrengelman.shadow' version '8.1.1'
+//    id 'com.github.johnrengelman.shadow' version '7.1.2'
+//    note - relocation will crash when using the shadow plugin version 7
+}
+
+sourceCompatibility = 1.17
+targetCompatibility = 1.17
+
+group = 'com.ccreanga.spark.iceberg.shadow'
+version = '1.0-SNAPSHOT'
+
+ext.versions = [
+        spark: "3.5.0",
+        iceberg: "1.4.0",
+        scala_version: "2.12"
+]
+
+dependencies {
+    //make them provided
+    compileOnly("org.apache.spark:spark-core_${versions.scala_version}:${versions.spark}")
+    compileOnly("org.apache.spark:spark-sql_${versions.scala_version}:${versions.spark}")
+
+    runtimeOnly("org.apache.iceberg:iceberg-spark-runtime-3.5_2.12:${versions.iceberg}")
+
+
+}
+
+test {
+    useJUnitPlatform()
+}
+
+repositories {
+    mavenCentral()
+}
+
+shadowJar {
+    zip64 true
+    mergeServiceFiles()
+
+    relocate("org.apache.curator","crwd.org.apache.curator")
+    relocate("org.apache.zookeeper","crwd.org.apache.zookeeper")
+}
